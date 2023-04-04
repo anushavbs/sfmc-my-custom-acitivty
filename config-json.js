@@ -14,8 +14,8 @@ module.exports = function configJSON(req) {
     workflowApiVersion: '1.1',
     // metaData points 
     metaData: {
-      icon: 'images/apex_120.png',
-      category: 'custom'
+      icon: 'images/iconSmall.png',
+      category: 'message'
     },
     type: 'REST',
     lang: {
@@ -41,21 +41,21 @@ module.exports = function configJSON(req) {
         retryDelay: 1000,
         // the number of concurrent requests JB will send all together
         concurrentRequests: 5,
-        url:`https://${req.headers.host}/execute`,
+        url:'https://customactivityv2.herokuapp.com/execute',
       },
     },
     configurationArguments: {
       save: {
-        url: `https://${req.headers.host}/save`
+        url: 'https://customactivityv2.herokuapp.com/save'
       },
       publish: {
-        url: `https://${req.headers.host}/publish`
+        url: 'https://customactivityv2.herokuapp.com/publish'
       },
       validate: {
-        url: `https://${req.headers.host}/validate`
+        url: 'https://customactivityv2.herokuapp.com/validate'
       },
       stop: {
-        url: `https://${req.headers.host}/stop`
+        url: 'https://customactivityv2.herokuapp.com/stop'
       }
     },
     // userInterfaces: {
@@ -96,5 +96,5 @@ module.exports = function configJSON(req) {
       }
     }
   }
-  
+  console.log(arguments.execute.url)
 }

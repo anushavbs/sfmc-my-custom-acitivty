@@ -12,7 +12,8 @@ const express     = require('express');
 const bodyParser  = require('body-parser');
 const path        = require('path');
 const axios       = require('axios')
-
+var http = require('https');
+var request = require('request');
 const app = express();
 const configJSON = require('./config-json');
 
@@ -133,29 +134,53 @@ app.post('/execute', async (req, res) => {
       console.log('preparing payload...making request to url...')
       let reqOptions; 
       let contactKey = req.body.keyValue
-      let urlString = req.body.inArguments[0].urlString
-      let payload = req.body.inArguments[0].payload
+      let fname = req.body.inArguments[0].fname
+      let lname = req.body.inArguments[0].lname
+      let docname = req.body.inArguments[0].docname
+      let email = req.body.inArguments[0].email
+      let appointmentdate = req.body.inArguments[0].appointmentdate
 
-      // add contactKey, eventDate to payload
-      payload.contactKey = contactKey
+      var postData = {  
+        "to":[  
+           {  
+              "email":email,
+              "name":fname+' '+lname
+           }
+        ],
+        "templateId":3,
+        "params":{  
+           "FirstName":fname,
+           "LastName":lname,
+           "DoctorName" : docname
+        },
+        "headers":{  
+           "X-Mailin-custom":"custom_header_1:custom_value_1|custom_header_2:custom_value_2|custom_header_3:custom_value_3",
+           "charset":"iso-8859-1"
+        }
+     }
+    console.log('postBody ' , postData)
+    var postBody = postData;
             
-      if (urlString && Object.keys(payload).length > 0) {
-        reqOptions = {
-          method: 'POST',
-          url: urlString,
-          data: JSON.stringify(payload)
+      if (email.length > 0) {
+        var options = {
+          'method': 'POST',
+          'url': 'https://api.sendinblue.com/v3/smtp/email',
+          'headers': {
+            'accept': 'application/json',
+            'content-type': 'application/json',
+            'api-key': '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'
+          },
+          body:JSON.stringify(postData)
         }
-      } else {
-        reqOptions = {
-          method: 'POST',
-          url: urlString,
-        }
-      }
+
+        request(options, function (error, response) {
+          if (error) throw new Error(error);
+          console.log(response.body);
+        });
+  
+       
+      } 
       
-      logger('reqOptions: ', reqOptions)
-      
-      // not going to bother using 'await'...will slow down code waiting for response
-      axios(reqOptions) 
       
     } else {
       return res.status(500).json({
